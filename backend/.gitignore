@@ -17,6 +17,7 @@ Thumbs.db
 # Prisma
 prisma/dev.db
 prisma/migrations/*/README.md
+src/generated
 *.sqlite
 
 # VS Code
