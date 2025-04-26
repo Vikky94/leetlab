@@ -17,7 +17,7 @@ model User {
   updatedAt DateTime @updatedAt
   emailVerificationToken String?
   emailVerificationTokenExpiry DateTime?
-  forgotPassworddToken String?
-  forgotPassworddTokenExpiry DateTime?
+  forgotPasswordToken String?
+  forgotPasswordTokenExpiry DateTime?
   problems  Problem[]
 }
