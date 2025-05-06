@@ -5,17 +5,17 @@ enum Difficulty {
 }
 model Problem {
   id          String     @id @default(uuid())
-  title       String
+  title       String     @unique
   description String
   difficulty  Difficulty
-  tags        String[] // ["tag1", "tag2", "tag3"]
+  tags        String[]
   userId      String
   examples    Json
   constraints String
   hints       String?
   editorial   String?
 
-  testcases          Json // 
+  testcases          Json 
   codeSnippets       Json
   referenceSolutions Json
 

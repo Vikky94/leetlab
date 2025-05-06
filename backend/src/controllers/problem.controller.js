@@ -20,6 +20,9 @@ export const createProblem = asyncHandler(async (req, res) => {
         codeSnippets,
         referenceSolutions,
     } = req.body;
+    const isProblemExist = await db.problem.findUnique({ where : {"title" : title} });
+    if(isProblemExist ) throw new ApiError(409, "Problem already exist with this name") 
+
     for (const [language, solutionCode] of Object.entries(referenceSolutions)) {
         const languageId = getJudge0LanguageId(language);
         if (!languageId) throw new ApiError(400, { error: `Language ${language} is not supported` });
@@ -53,7 +56,6 @@ export const createProblem = asyncHandler(async (req, res) => {
             userId: req.user.id,
         },
     });
-
     return res.status(201).json(new ApiResponse(201, { problem: newProblem }, "Message Created Successfully"));
 });
 
