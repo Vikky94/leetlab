@@ -20,8 +20,8 @@ export const createProblem = asyncHandler(async (req, res) => {
         codeSnippets,
         referenceSolutions,
     } = req.body;
-    const isProblemExist = await db.problem.findUnique({ where : {"title" : title} });
-    if(isProblemExist ) throw new ApiError(409, "Problem already exist with this name") 
+    const isProblemExist = await db.problem.findUnique({ where: { "title": title } });
+    if (isProblemExist) throw new ApiError(409, "Problem already exist with this name")
 
     for (const [language, solutionCode] of Object.entries(referenceSolutions)) {
         const languageId = getJudge0LanguageId(language);
@@ -75,16 +75,61 @@ export const getProblemById = async (req, res) => {
     if (!problem) throw new ApiError(404, "Problem not found.");
     return res.status(200).json({
         sucess: true,
-        message: "Message Created Successfully",
+        message: "Problem Fetched Successfully",
         problem,
     });
 };
 
-// TODO: IMPLEMENT BY YOUR SELF🔥
 export const updateProblem = async (req, res) => {
-    // id
-    // id--->problem ( condition)
-    // baaki kaam same as create
+    const id = req.params.id;
+    const {
+        title,
+        description,
+        difficulty,
+        tags,
+        examples,
+        constraints,
+        testcases,
+        codeSnippets,
+        referenceSolutions,
+    } = req.body;
+    for (const [language, solutionCode] of Object.entries(referenceSolutions)) {
+        const languageId = getJudge0LanguageId(language);
+        if (!languageId) throw new ApiError(400, { error: `Language ${language} is not supported` });
+
+        const submissions = testcases.map(({ input, output }) => ({
+            source_code: solutionCode,
+            language_id: languageId,
+            stdin: input,
+            expected_output: output,
+        }));
+        const submissionResults = await submitBatch(submissions);
+        const tokens = submissionResults.map((res) => res.token);
+        const results = await pollBatchResults(tokens);
+        for (let i = 0; i < results.length; i++) {
+            const result = results[i];
+            console.log("Result-----", result);
+            if (result.status.id !== 3) throw new ApiError(400, { error: `Testcase ${i + 1} failed for language ${language}` })
+        }
+    }
+    const newProblem = await db.problem.update({
+        where: {
+            "id": id
+        },
+        data: {
+            title,
+            description,
+            difficulty,
+            tags,
+            examples,
+            constraints,
+            testcases,
+            codeSnippets,
+            referenceSolutions,
+            userId: req.user.id,
+        }
+    });
+    return res.status(201).json(new ApiResponse(200, { problem: newProblem }, "Problem Updated Successfully"));
 };
 
 export const deleteProblem = async (req, res) => {
