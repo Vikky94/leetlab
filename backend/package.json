@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev":"nodemon src/index.js",
+    "dev": "nodemon src/index.js",
     "start": "node src/index.js",
     "reset": "npx prisma migrate reset --schema=./prisma/schema/",
     "db": "npx prisma migrate dev --name init --schema=./prisma/schema/",
@@ -14,7 +14,7 @@
     "db:pull": "prisma db pull -schema=./prisma/schema/",
     "db:studio": "prisma studio -schema=./prisma/schema/",
     "prisma:generate:schema": "prisma-dbml-generator",
-    "format-code":"npx prettier --write ."
+    "format-code": "npx prettier --write ."
   },
   "keywords": [],
   "author": "",
