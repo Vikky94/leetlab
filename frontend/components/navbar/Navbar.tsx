@@ -1,5 +1,6 @@
 "use client"
 import Link from "next/link"
+import React from 'react'
 import {
     NavigationMenu,
     NavigationMenuItem,
@@ -10,23 +11,41 @@ import {
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import {
-    Sheet,
-    SheetContent,
-    SheetTrigger
-} from "@/components/ui/sheet"
-import {
     Search,
-    Menu,
-    Trophy,
-    Code,
-    MessageSquare,
     Moon,
-    Sun
+    Sun,
+    User,
+    LayoutDashboard,
+    UserRoundPen,
+    LogOut
 } from "lucide-react"
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuLabel,
+    DropdownMenuSeparator,
+    DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
 import { useTheme } from "next-themes"
+import { useAuthStore } from "@/store"
+
 
 export default function Navbar() {
+    let navigationMenuItems = ['Problems', 'Contest', 'Discuss', 'Sign in', 'Sign Up'];
     const { setTheme, theme } = useTheme();
+    const { isAuthenticated } = useAuthStore();
+    console.log(`isAuthenticated -> ${isAuthenticated}`);
+    const authenticatedRoutes = [{ "name": 'Dashboard', "icon": LayoutDashboard }, { "name": 'Profile', "icon": UserRoundPen }].map((item, key) => {
+        return (
+            <DropdownMenuItem className="hover:cursor-pointer" key={key}>
+                <Link href={`/${item.name.toLowerCase().replaceAll(" ", "")}`} className="flex justify-between">
+                    {React.createElement(item.icon, { size: 28 })}
+                    {item.name}</Link>
+            </DropdownMenuItem>
+        );
+    })
+    if (isAuthenticated) navigationMenuItems = ['Problems', 'Contest', 'Discuss'];
     return (
         <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
             <div className="container flex h-16 items-center justify-between">
@@ -58,19 +77,27 @@ export default function Navbar() {
                     <NavigationMenu>
                         <NavigationMenuList>
                             {
-                                ['Problems', 'Contest', 'Discuss', 'Sign in', 'Sign Up'].map((item) => {
+                                navigationMenuItems.map((item) => {
                                     return (
-                                        <NavigationMenuItem className="hover:text-orange-500" key={item}>
-                                            <Link  href={`/${item.toLowerCase().replaceAll(" ", "")}`}>
-                                                <NavigationMenuLink className={`${navigationMenuTriggerStyle()} `}>
-                                                    {item}
-                                                </NavigationMenuLink>
-                                            </Link>
+                                        <NavigationMenuItem key={item}>
+                                            <NavigationMenuLink className={`${navigationMenuTriggerStyle()} `} asChild>
+                                                <Link href={`/${item.toLowerCase().replaceAll(" ", "")}`}>{item}</Link>
+                                            </NavigationMenuLink>
                                         </NavigationMenuItem>
                                     )
                                 })
                             }
-
+                            {isAuthenticated &&
+                                <DropdownMenu>
+                                    <DropdownMenuTrigger className="hover:cursor-pointer"><User size={28} /></DropdownMenuTrigger>
+                                    <DropdownMenuContent>
+                                        <DropdownMenuLabel>My Account</DropdownMenuLabel>
+                                        <DropdownMenuSeparator />
+                                        {authenticatedRoutes}
+                                        <DropdownMenuItem className="hover:cursor-pointer"><LogOut size={28} />Log out</DropdownMenuItem>
+                                    </DropdownMenuContent>
+                                </DropdownMenu>
+                            }
                         </NavigationMenuList>
                     </NavigationMenu>
                 </div>

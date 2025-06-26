@@ -23,6 +23,7 @@ import { Input } from "@/components/ui/input"
 import { FiEye, FiEyeOff } from "react-icons/fi";
 import { useState } from "react"
 import { useAuthStore } from "@/store"
+import { useRouter, usePathname, useSearchParams } from 'next/navigation'
 
 const formSchema = z.object({
   email: z.string().email({ message: "Invalid email address" }),
@@ -33,6 +34,7 @@ const LoginPage = ({
   className,
   ...props
 }: React.ComponentProps<"div">) => {
+  const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
@@ -48,12 +50,17 @@ const LoginPage = ({
 
   const { isAuthenticated, login } = useAuthStore();
   console.log(`isAuthenticated -> ${isAuthenticated}`);
+  interface LoginCreds {
+    email:string;
+    password:string;
+  }
   async function onSubmit(values: z.infer<typeof formSchema>) {
     console.log(values);
     try {
       await login(values)
+      router.push('/dashboard');
     } catch (error) {
-      console.error("Signup failed" , error)
+      console.error("Signup failed", error)
     }
   }
 
