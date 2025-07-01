@@ -23,7 +23,7 @@ import { Input } from "@/components/ui/input"
 import { FiEye, FiEyeOff } from "react-icons/fi";
 import { useState } from "react"
 import { useAuthStore } from "@/store"
-import { useRouter, usePathname, useSearchParams } from 'next/navigation'
+import { useRouter} from 'next/navigation'
 
 const formSchema = z.object({
   email: z.string().email({ message: "Invalid email address" }),

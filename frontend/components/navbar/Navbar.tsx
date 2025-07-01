@@ -29,22 +29,29 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { useTheme } from "next-themes"
 import { useAuthStore } from "@/store"
+import { useRouter} from 'next/navigation'
+
 
 
 export default function Navbar() {
+    const router = useRouter();
     let navigationMenuItems = ['Problems', 'Contest', 'Discuss', 'Sign in', 'Sign Up'];
     const { setTheme, theme } = useTheme();
-    const { isAuthenticated } = useAuthStore();
+    const { isAuthenticated, logout } = useAuthStore();
     console.log(`isAuthenticated -> ${isAuthenticated}`);
     const authenticatedRoutes = [{ "name": 'Dashboard', "icon": LayoutDashboard }, { "name": 'Profile', "icon": UserRoundPen }].map((item, key) => {
         return (
             <DropdownMenuItem className="hover:cursor-pointer" key={key}>
-                <Link href={`/${item.name.toLowerCase().replaceAll(" ", "")}`} className="flex justify-between">
-                    {React.createElement(item.icon, { size: 28 })}
+                <Link href={`/${item.name.toLowerCase().replaceAll(" ", "")}`} className="flex justify-between items-center gap-2.5">
+                    {React.createElement(item.icon, { size: 24 })}
                     {item.name}</Link>
             </DropdownMenuItem>
         );
     })
+    const handleLogoutClick = async (e: MouseEvent) => {
+        await logout();
+        router.push("/")
+    }
     if (isAuthenticated) navigationMenuItems = ['Problems', 'Contest', 'Discuss'];
     return (
         <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -94,7 +101,7 @@ export default function Navbar() {
                                         <DropdownMenuLabel>My Account</DropdownMenuLabel>
                                         <DropdownMenuSeparator />
                                         {authenticatedRoutes}
-                                        <DropdownMenuItem className="hover:cursor-pointer"><LogOut size={28} />Log out</DropdownMenuItem>
+                                        <DropdownMenuItem onClick={(e) => handleLogoutClick(e)} className="hover:cursor-pointer"><LogOut size={28} />Log out</DropdownMenuItem>
                                     </DropdownMenuContent>
                                 </DropdownMenu>
                             }
